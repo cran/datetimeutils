@@ -1,0 +1,29 @@
+## exportPattern("^[[:alpha:]]+")
+
+export(
+    "day_of_month<-",
+    "mday<-",
+    convert_date,
+    convert_tz,
+    day_of_month,
+    end_of_month,
+    end_of_previous_month,
+    end_of_year,
+    end_of_previous_year,
+    first_of_month,
+    first_of_year,
+    guess_datetime,
+    is_businessday,
+    is_leapyear,
+    is_weekend,
+    last_weekday,
+    mday,
+    next_bday,
+    next_businessday,
+    nth_weekday,
+    prev_bday,
+    previous_businessday,
+    rfc822t,
+    roundPOSIXt,
+    timegrid
+    )

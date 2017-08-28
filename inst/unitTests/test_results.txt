@@ -1,0 +1,31 @@
+RUNIT TEST PROTOCOL -- Thu Aug 17 08:10:13 2017 
+*********************************************** 
+Number of test functions: 10 
+Number of errors: 0 
+Number of failures: 0 
+
+ 
+1 Test Suite : 
+datetimeutils - 10 test functions, 0 errors, 0 failures
+
+
+
+Details 
+*************************** 
+Test Suite: datetimeutils 
+Test function regexp: ^test.+ 
+Test file regexp: ut_.* 
+Involved directory: 
+~/Packages/datetimeutils/inst/unitTests 
+--------------------------- 
+Test file: C:\Users\Scen1/Packages/datetimeutils/inst/unitTests/ut_datetime.R 
+test.convert_date: (2 checks) ... OK (0 seconds)
+test.Datetime: (2 checks) ... OK (0 seconds)
+test.end_of_month: (5 checks) ... OK (0.01 seconds)
+test.end_of_year: (5 checks) ... OK (0 seconds)
+test.guess_datetime: (1 checks) ... OK (0 seconds)
+test.next_businessday: (6 checks) ... OK (0 seconds)
+test.nth_weekday: (19 checks) ... OK (0.02 seconds)
+test.previous_businessday: (6 checks) ... OK (0 seconds)
+test.roundPOSIXt: (2 checks) ... OK (0 seconds)
+test.timegrid: (2 checks) ... OK (0 seconds)
