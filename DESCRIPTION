@@ -1,12 +1,13 @@
 Package: datetimeutils
 Type: Package
 Title: Utilities for Dates and Times
-Version: 0.2-7
-Date: 2017-08-24
+Version: 0.2-12
+Date: 2018-02-28
 Maintainer: Enrico Schumann <es@enricoschumann.net>
 Authors@R: person("Enrico", "Schumann",
                   role  = c("aut", "cre"),
-                  email = "es@enricoschumann.net")
+                  email = "es@enricoschumann.net",
+                  comment = c(ORCID = "0000-0001-7601-6576"))
 Description: Utilities for handling dates and times, such
    as selecting particular days of the week or month,
    formatting timestamps as required by RSS feeds, or
@@ -21,7 +22,7 @@ Description: Utilities for handling dates and times, such
 License: GPL-3
 URL: http://enricoschumann.net/R/packages/datetimeutils/
 NeedsCompilation: no
-Packaged: 2017-08-25 13:06:40 UTC; SCEN1
-Author: Enrico Schumann [aut, cre]
+Packaged: 2018-03-10 18:41:25 UTC; es19
+Author: Enrico Schumann [aut, cre] (<https://orcid.org/0000-0001-7601-6576>)
 Repository: CRAN
-Date/Publication: 2017-08-28 18:56:55 UTC
+Date/Publication: 2018-03-10 21:14:04 UTC

@@ -3,7 +3,7 @@
 ###################################################
 ### code chunk number 1: datetimeutils_examples.Rnw:25-27
 ###################################################
-options(continue = "  ", digits = 3, width = 60, useFancyQuotes = FALSE)
+options(continue = "  ", digits = 3, width = 70, useFancyQuotes = FALSE)
 require("datetimeutils")
 
 
@@ -25,7 +25,7 @@ convert_tz("2016-05-10 12:00:00", "Europe/Berlin", "America/Chicago")
 ###################################################
 is_weekend(as.Date("2017-1-5"))
 next_businessday(as.Date("2017-1-5"))   ## there is also 'previous_businessday'
-next_businessday(as.Date("2017-1-5"), shift = 2)     ## short-hand: 'next_bday'
+next_businessday(as.Date("2017-1-5"), shift = 2)  ## short-hand: 'next_bday'
 
 
 ###################################################
@@ -38,14 +38,17 @@ guess_datetime(s)
 
 
 ###################################################
-### code chunk number 6: datetimeutils_examples.Rnw:78-80
+### code chunk number 6: datetimeutils_examples.Rnw:78-83
 ###################################################
 last_weekday(5, as.Date("2017-1-1"))   ## last Friday of Jan 2017
 nth_weekday(1, as.Date("2017-1-1"), 2) ## second Monday of Jan 2017
 
+dates <- seq(as.Date("2012-1-1"), as.Date("2013-4-15"), by = "day")
+nth_day(dates, period = "quarter", n = "first")
+
 
 ###################################################
-### code chunk number 7: datetimeutils_examples.Rnw:83-84
+### code chunk number 7: datetimeutils_examples.Rnw:86-87
 ###################################################
 toLatex(sessionInfo())
 

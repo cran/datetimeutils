@@ -2,7 +2,8 @@
 
                                         # DATES
 
-prev_bday  <- previous_businessday <- function (x, holidays = NULL, shift = -1) {
+prev_bday  <- previous_businessday <-
+    function (x, holidays = NULL, shift = -1) {
     if (!is.null(holidays))
         .NotYetUsed("holidays", FALSE)
     if (!all(inherits(x, "Date") | inherits(x, "POSIXt")))
@@ -29,7 +30,8 @@ prev_bday  <- previous_businessday <- function (x, holidays = NULL, shift = -1) 
     x
 }
 
-next_bday  <- next_businessday <- function(x, holidays = NULL, shift = 1) {
+next_bday  <- next_businessday <-
+    function(x, holidays = NULL, shift = 1) {
     if (!is.null(holidays))
         .NotYetUsed("holidays", FALSE)
     if (!all(inherits(x,"Date") | inherits(x,"POSIXt")))
@@ -42,7 +44,7 @@ next_bday  <- next_businessday <- function(x, holidays = NULL, shift = 1) {
         x[tmpi] <- x[tmpi] + 2L
         tmpi <- tmp$wday == 0L
         x[tmpi] <- x[tmpi] + 1L
-        
+
     } else {
         for (i in 1:shift) {
             x <- x + 1
@@ -166,7 +168,10 @@ nth_weekday <- function(weekday, x, n = 1L) {
     weekday1 <- tmp$wday            ## when 'mday' is changed
     as.Date(tmp) + (weekday - weekday1) %% 7L + 7L*(n - 1L)
 }
+
+
                                         # TIMES
+
 make_hhmmss <- function(x, label = "time specification (HHMMSS)") {
     x <- as.character(x)
     if (nchar(x) == 1L)
@@ -189,7 +194,7 @@ make_hhmmss <- function(x, label = "time specification (HHMMSS)") {
 }
 
 timegrid <- function(from, to, interval,
-                     excludeWeekends = TRUE,
+                     exclude.weekends = TRUE,
                      holidays   = NULL,
                      fromHHMMSS = "080000",
                      toHHMMSS   = "220000") {
@@ -211,10 +216,13 @@ timegrid <- function(from, to, interval,
     tz <- attr(from, "tzone")
     lt <- as.POSIXlt(grd, tz = if (is.null(tz)) "" else tz)
     tmp <- lt$hour*10000 + lt$min*100 + lt$sec
-    if (excludeWeekends)
+    if (exclude.weekends)
         grd <- grd[lt$wday > 0L & lt$wday < 6L &
                    as.numeric(fromHHMMSS) <= tmp &
-                   as.numeric(toHHMMSS) >= tmp] 
+                   as.numeric(toHHMMSS) >= tmp]
+    else
+        grd <- grd[as.numeric(fromHHMMSS) <= tmp &
+                   as.numeric(toHHMMSS) >= tmp]
     as.POSIXct(grd)
 }
 
@@ -306,7 +314,81 @@ ref_timestamp <- function(what, when = Sys.Date(), timestamps, index = FALSE) {
         timestamps[ii] else ii
 }
 
+nth_day <- function(timestamps,
+                    period = "month", n,
+                    start, end, 
+                    business.days = FALSE,
+                    missing = "previous",
+                    index = FALSE) {
 
+    if (missing(timestamps)) {
+        if (index)
+            stop(sQuote("index"), " is TRUE but no ",
+                 sQuote("timestamps"), " supplied")
+        timestamps <- seq(from = start,
+                          to = end,
+                          by = "1 day")
+        
+    } else if (is.unsorted(timestamps)) {
+        warning(sQuote("timestamps"), " was unsorted")
+        timestamps <- sort(timestamps)
+    }
+
+    if (business.days) {
+        timestamps <-
+            timestamps[is_businessday(timestamps)]
+    }
+
+    if (all(is.character(period)))
+        period <- tolower(period)        
+
+    if (period[1L] == "month") {
+        by <- format(timestamps, "%Y-%m")
+    } else if (period[1] == "quarter") {
+        by <- paste(year(timestamps),
+                    as.POSIXlt(timestamps)$mon %/% 3L + 1L)
+    } else if (period[1] == "halfyear" || period[1] == "half-year") {
+        by <- paste(year(timestamps),
+                    as.POSIXlt(timestamps)$mon %/% 6L + 1L)
+    } else if (period[1] == "year") {
+        by <- format(timestamps, "%Y")        
+    } else if (period[1] == "week") {
+        by <- (as.numeric(timestamps) - 4) %/% 7
+    } else if (all(is.numeric(period)) && all(period < 13)) {
+        by <- format(timestamps, "%Y-%m")
+    } else
+        stop("unknown ", sQuote("period"))
+    
+    if (n[1L] == "last") {
+        lby <- length(by)
+        rby <- by[lby:1]
+        ii <- lby - match(unique(by), rby) + 1L
+    } else if (n[1L] == "first") {
+        ii <- match(unique(by), by)
+    } else if (is.numeric(n) && 
+               all(is.numeric(period)) &&
+               all(period < 13)) {
+        jj <- which(month(timestamps) %in% period)
+        timestamps_ <- timestamps[jj]
+        ans <- unname(tapply(timestamps_,
+                             INDEX = format(timestamps_, "%Y-%m"),
+                             function(x) x[n]))        
+        class(ans) <- class(timestamps_)
+        ii <- match(ans, timestamps)
+    } else if (is.numeric(n)) { 
+        ans <- unname(unlist(tapply(timestamps,
+                             INDEX = by,
+                             function(x) x[n])))
+        class(ans) <- class(timestamps)
+        ii <- match(ans, timestamps)        
+    } else
+        stop("unknown ", sQuote("n"))
+        
+    if (index) {
+        ii
+    } else
+        timestamps[ii]
+}
 
 .dt_patterns <- c(
     "[1-2][0-9][0-9][0-9]-[0-9]+-[0-9]+ +[0-9]+:[0-9]+:[0-9]+",           "%Y-%m-%d %H:%M:%S",
@@ -338,4 +420,18 @@ guess_datetime <- function(s) {
     }
 
     ans
+}
+
+year <- function(x, as.character = FALSE) {
+    if (as.character)
+        as.character(as.POSIXlt(x)$year + 1900)
+    else
+        as.POSIXlt(x)$year + 1900
+}
+
+month <- function(x, as.character = FALSE) {
+    if (as.character)
+        as.character(as.POSIXlt(x)$mon + 1)
+    else
+        as.POSIXlt(x)$mon + 1
 }

@@ -2,8 +2,8 @@ test.last_weekday <- function() {
 
     x <- as.Date(c("1996-05-30","1996-05-20"))
 
-    checkEquals(last_weekday(6, x, 0),
-                structure(c(9641, 9641), class = "Date"))
+    checkEquals(last_weekday(6, x, 0), structure(c(9641, 9641), class
+                = "Date"))
 
     checkEquals(last_weekday(6, x, -1),
                 structure(c(9641, 9641), class = "Date") - 7)
@@ -273,4 +273,78 @@ test.end_of_month <- function() {
             c("2016-12-31",
               "2017-11-30",
               "2017-07-31"))))    
+}
+
+
+test.nth_day <- function() {
+
+    sq <- seq(as.Date("2000-1-1"), as.Date("2001-11-30"), by = "day")
+
+    checkEquals(nth_day(sq, "quarter", n = "first"),
+                structure(c(10957, 11048, 11139, 11231,
+                            11323, 11413, 11504, 11596),
+                          class = "Date"))
+    
+    checkEquals(nth_day(sq, "quarter", n = "last"),
+                structure(c(11047, 11138, 11230, 11322,
+                            11412, 11503, 11595, 11656),
+                          class = "Date"))
+
+    checkEquals(nth_day(sq, "halfyear", n = "first"),
+                structure(c(10957, 11139, 11323, 11504),
+                          class = "Date"))
+
+    checkEquals(nth_day(sq, "halfyear", n = "last"),
+                structure(c(11138, 11322, 11503, 11656),
+                          class = "Date"))
+
+    checkEquals(nth_day(sq, period = c(2, 12), n = 5),
+                structure(c(10992, 11296, 11358), class = "Date"))
+
+    checkEquals(nth_day(sq, period = 2, n = 5),
+                structure(c(10992, 11358), class = "Date"))
+
+    checkEquals(nth_day(sq, period = "year", n = 5),
+                structure(c(10961, 11327), class = "Date"))
+
+    checkEquals(nth_day(sq, period = "month", n = 6),
+                structure(c(10962, 10993, 11022, 11053,
+                            11083, 11114, 11144, 11175,
+                            11206, 11236, 11267, 11297,
+                            11328, 11359, 11387, 11418,
+                            11448, 11479, 11509, 11540,
+                            11571, 11601, 11632),
+                          class = "Date"))
+
+    checkEquals(nth_day(sq, n = 1:2),
+                structure(c(10957, 10958, 10988, 10989,
+                            11017, 11018, 11048, 11049,
+                            11078, 11079, 11109, 11110,
+                            11139, 11140, 11170, 11171,
+                            11201, 11202, 11231, 11232,
+                            11262, 11263, 11292, 11293,
+                            11323, 11324, 11354, 11355,
+                            11382, 11383, 11413, 11414,
+                            11443, 11444, 11474, 11475,
+                            11504, 11505, 11535, 11536,
+                            11566, 11567, 11596, 11597,
+                            11627, 11628),
+                          class = "Date"))
+
+}
+
+test.year <- function() {
+    checkEquals(year(as.Date("2018-1-1")+1:3),
+                rep(2018, 3))
+    checkEquals(year(as.Date("2018-1-1")+1:3,
+                     as.character = TRUE),
+                rep("2018", 3))    
+}
+
+test.month <- function() {
+    checkEquals(month(as.Date("2017-12-31")+0:1),
+                c(12,1))
+    checkEquals(month(as.Date("2017-12-31")+0:1,
+                     as.character = TRUE),
+                c("12","1"))
 }
