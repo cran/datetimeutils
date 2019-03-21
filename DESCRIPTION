@@ -1,8 +1,8 @@
 Package: datetimeutils
 Type: Package
 Title: Utilities for Dates and Times
-Version: 0.2-12
-Date: 2018-02-28
+Version: 0.3-0
+Date: 2019-03-21
 Maintainer: Enrico Schumann <es@enricoschumann.net>
 Authors@R: person("Enrico", "Schumann",
                   role  = c("aut", "cre"),
@@ -22,7 +22,7 @@ Description: Utilities for handling dates and times, such
 License: GPL-3
 URL: http://enricoschumann.net/R/packages/datetimeutils/
 NeedsCompilation: no
-Packaged: 2018-03-10 18:41:25 UTC; es19
+Packaged: 2019-03-21 19:16:49 UTC; es19
 Author: Enrico Schumann [aut, cre] (<https://orcid.org/0000-0001-7601-6576>)
 Repository: CRAN
-Date/Publication: 2018-03-10 21:14:04 UTC
+Date/Publication: 2019-03-21 19:43:26 UTC

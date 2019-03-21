@@ -38,17 +38,20 @@ guess_datetime(s)
 
 
 ###################################################
-### code chunk number 6: datetimeutils_examples.Rnw:78-83
+### code chunk number 6: datetimeutils_examples.Rnw:78-86
 ###################################################
 last_weekday(5, as.Date("2017-1-1"))   ## last Friday of Jan 2017
 nth_weekday(1, as.Date("2017-1-1"), 2) ## second Monday of Jan 2017
 
 dates <- seq(as.Date("2012-1-1"), as.Date("2013-4-15"), by = "day")
 nth_day(dates, period = "quarter", n = "first")
+nth_day(dates, period = c("Jan", "April"), n = "first")
+nth_day(dates, period = c("Jan", "April"), n = "last")
+nth_day(dates, period = c("Jan", "April"), n = c(2, 5))
 
 
 ###################################################
-### code chunk number 7: datetimeutils_examples.Rnw:86-87
+### code chunk number 7: datetimeutils_examples.Rnw:89-90
 ###################################################
 toLatex(sessionInfo())
 

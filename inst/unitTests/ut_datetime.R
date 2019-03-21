@@ -331,6 +331,41 @@ test.nth_day <- function() {
                             11627, 11628),
                           class = "Date"))
 
+
+
+    for (m in month.name)
+        checkEquals(nth_day(sq, period = m, n = "first"),
+                    nth_day(sq, period = which(m == month.name),
+                            n = "first"))
+    for (m in month.name)
+        checkEquals(nth_day(sq, period = m, n = 1),
+                    nth_day(sq, period = which(m == month.name), n = 1))
+
+    for (m in month.name)
+        checkEquals(nth_day(sq, period = m, n = 1:2),
+                    nth_day(sq, period = which(m == month.name), n = 1:2))
+    
+    checkEquals(nth_day(sq, period = c("April", "jan"), n = 2:3),
+                structure(c(10958, 10959, 11049, 11050,
+                            11324, 11325, 11414, 11415),
+                          class = "Date"))
+    checkEquals(nth_day(sq, period = "Dec", n = "first"),
+                as.Date("2000-12-01"))
+    checkEquals(nth_day(sq, period = "Nov", n = "first"),
+                as.Date(c("2000-11-01", "2001-11-01")))
+
+    checkEquals(nth_day(n = 2, start = 2017, end = 2017),
+                seq(as.Date("2017-1-2"), as.Date("2017-12-2"),
+                    by = "1 month"))
+
+    checkEquals(nth_day(2017, n = 2),
+                seq(as.Date("2017-1-2"), as.Date("2017-12-2"),
+                    by = "1 month"))
+
+    checkEquals(nth_day(2017, period = "quarter", n = 2),
+                seq(as.Date("2017-1-2"), as.Date("2017-12-2"),
+                    by = "1 quarter"))
+
 }
 
 test.year <- function() {
@@ -347,4 +382,14 @@ test.month <- function() {
     checkEquals(month(as.Date("2017-12-31")+0:1,
                      as.character = TRUE),
                 c("12","1"))
+}
+
+test.end_of_quarter <- function() {
+    dates <- as.Date("1999-1-1") + 0:5000
+
+    dates2 <- end_of_month(as.Date(paste(
+        year(dates),
+        as.numeric(substr(quarters(dates, TRUE), 2, 2))*3,
+        1), format = "%Y %m %d"))
+    checkEquals(end_of_quarter(dates), dates2)    
 }
