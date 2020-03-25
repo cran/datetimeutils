@@ -1,3 +1,17 @@
+v0.4-0  (2020-03-25)
+
+  o guess_datetime: the function now supports the date
+    pattern "YYYYMMDD"; it also gains arguments
+    'date.only', 'within' and 'tz'
+
+  o the package now contains vectors 'month.name.de'
+    and 'month.abb.de.din1355.1', which provide German
+    month names and their abbreviations
+
+  o the package now contains a data.frame 'tznames',
+    which provides a mapping between Olson and Windows
+    timezone names
+
 v0.3-0  (2019-03-21)
 
   o new function 'end_of_quarter'

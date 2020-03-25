@@ -1,13 +1,15 @@
 Package: datetimeutils
 Type: Package
 Title: Utilities for Dates and Times
-Version: 0.3-0
-Date: 2019-03-21
+Version: 0.4-0
+Date: 2020-03-25
 Maintainer: Enrico Schumann <es@enricoschumann.net>
-Authors@R: person("Enrico", "Schumann",
-                  role  = c("aut", "cre"),
-                  email = "es@enricoschumann.net",
-                  comment = c(ORCID = "0000-0001-7601-6576"))
+Authors@R: c(person("Enrico", "Schumann",
+                    role  = c("aut", "cre"),
+                    email = "es@enricoschumann.net",
+                    comment = c(ORCID = "0000-0001-7601-6576")),
+             person("Unicode, Inc.", role = c("dtc", "cph"),
+                    comment = "source of timezone names in 'tznames'"))
 Description: Utilities for handling dates and times, such
    as selecting particular days of the week or month,
    formatting timestamps as required by RSS feeds, or
@@ -20,9 +22,12 @@ Description: Utilities for handling dates and times, such
    use of R's native numeric representations of timestamps
    where possible.
 License: GPL-3
-URL: http://enricoschumann.net/R/packages/datetimeutils/
+URL: http://enricoschumann.net/R/packages/datetimeutils/,
+        https://github.com/enricoschumann/datetimeutils
+LazyData: yes
 NeedsCompilation: no
-Packaged: 2019-03-21 19:16:49 UTC; es19
-Author: Enrico Schumann [aut, cre] (<https://orcid.org/0000-0001-7601-6576>)
+Packaged: 2020-03-25 17:49:20 UTC; es19
+Author: Enrico Schumann [aut, cre] (<https://orcid.org/0000-0001-7601-6576>),
+  Unicode, Inc. [dtc, cph] (source of timezone names in 'tznames')
 Repository: CRAN
-Date/Publication: 2019-03-21 19:43:26 UTC
+Date/Publication: 2020-03-25 18:10:02 UTC
