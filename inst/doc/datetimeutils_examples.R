@@ -31,7 +31,7 @@ next_businessday(as.Date("2017-1-5"), shift = 2)  ## short-hand: 'next_bday'
 ###################################################
 ### code chunk number 5: datetimeutils_examples.Rnw:68-72
 ###################################################
-s <- c(" 1999-08-19 10:00",  
+s <- c(" 1999-08-19 10:00",
        "19.8.1999 10:00",    ## Central-European, e.g. Germany
        "8/19/99 10:00:00")   ## US
 guess_datetime(s)
