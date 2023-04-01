@@ -32,6 +32,41 @@ for (i in 1:5) {
 expect_equal(convert_date(41824, "excel"), as.Date("2014-07-04"))
 expect_equal(convert_date(61, "excel"), as.Date("1900-03-01"))
 
+expect_equal(convert_date(41824.625, "excel", fraction = TRUE),
+             structure(1404478800, class = c("POSIXct", "POSIXt"), tzone = ""))
+expect_equal(convert_date(610.125, "excel", fraction = TRUE),
+             structure(-2156450400, class = c("POSIXct", "POSIXt"), tzone = ""))
+
+expect_equal(convert_date(41824.625, "excel", fraction = TRUE, tz = "GMT"),
+             structure(1404486000, class = c("POSIXct", "POSIXt"), tzone = "GMT"))
+expect_equal(convert_date(610.125, "excel", fraction = TRUE, tz = "GMT"),
+             structure(-2156446800, class = c("POSIXct", "POSIXt"), tzone = "GMT"))
+
+
+## Excel 1904 testcase
+
+## https://stat.ethz.ch/pipermail/r-help/2021-July/471640.html
+## 7/20/21 13:30
+## 7/20/21 13:40
+## 42935.5625
+## 42935.56944
+
+## times <- c(42935.5625,42935.5694444444)
+## as.POSIXct((times*86400),origin="1904-01-01",tz="America/Chicago")
+## [1] "2021-07-20 08:30:00 CDT" "2021-07-20 08:39:59 CDT"
+
+expect_equal(as.character(convert_date(c(42935.5625,42935.5694444444), "excel1904")),
+             c("2021-07-20", "2021-07-20"))
+## convert_date(c(42935.5625,42935.5694444444), "excel1904", fraction = TRUE)
+## convert_date(c(42935.5625,42935.5694444444), "excel1904", fraction = TRUE,
+##              tz = "America/Chicago")
+x <- convert_date(c(42935.5625,42935.5694444444), "excel1904", fraction = TRUE,
+                  tz = "GMT")
+expect_equal(x,
+             structure(c(1626787800, 1626788399),
+                       class = c("POSIXct", "POSIXt"), tzone = "GMT"))
+## convert_tz(x, "GMT", "America/Chicago")
+
 ## ---------------------
 
 tmp <- structure(1435589310.11177,
@@ -102,6 +137,88 @@ expect_true(all(
     previous_businessday(dates, shift = -3)))
 expect_true(all(
     prev_bday(prev_bday(prev_bday(dates))) == prev_bday(dates, shift = -3)))
+
+## ---------------------
+
+dates <- seq(as.Date("2022-07-28"), as.Date("2022-08-5"), by = "1 day")
+data.frame(date = dates,
+           weekday = weekdays(dates),
+           next.bd = next_businessday(dates, holidays = "2022-08-01"))
+##         date   weekday    next.bd
+## 1 2022-07-28  Thursday 2022-07-29
+## 2 2022-07-29    Friday 2022-08-02
+## 3 2022-07-30  Saturday 2022-08-02
+## 4 2022-07-31    Sunday 2022-08-02
+## 5 2022-08-01    Monday 2022-08-02
+## 6 2022-08-02   Tuesday 2022-08-03
+## 7 2022-08-03 Wednesday 2022-08-04
+## 8 2022-08-04  Thursday 2022-08-05
+## 9 2022-08-05    Friday 2022-08-08
+expect_equal(next_businessday(dates, holidays = "2022-08-01"),
+             structure(c(19202, 19206, 19206, 19206, 19206, 19207, 19208,
+                         19209, 19212), class = "Date"))
+
+## ---------------------
+
+data.frame(date = dates,
+           weekday = weekdays(dates),
+           next.bd = next_businessday(dates,
+                                      holidays = as.Date("2022-08-01") + 0:1))
+##         date   weekday    next.bd
+## 1 2022-07-28  Thursday 2022-07-29
+## 2 2022-07-29    Friday 2022-08-03
+## 3 2022-07-30  Saturday 2022-08-03
+## 4 2022-07-31    Sunday 2022-08-03
+## 5 2022-08-01    Monday 2022-08-03
+## 6 2022-08-02   Tuesday 2022-08-03
+## 7 2022-08-03 Wednesday 2022-08-04
+## 8 2022-08-04  Thursday 2022-08-05
+## 9 2022-08-05    Friday 2022-08-08
+expect_equal(next_businessday(dates, holidays = as.Date("2022-08-01") + 0:1),
+             structure(c(19202, 19207, 19207, 19207, 19207, 19207, 19208,
+                         19209, 19212), class = "Date"))
+
+## ---------------------
+
+dates <- seq(as.Date("2022-07-28"), as.Date("2022-08-5"), by = "1 day")
+data.frame(date = dates,
+           weekday = weekdays(dates),
+           prev.bd = previous_businessday(dates,
+                                          holidays = as.Date("2022-08-01") + 0:1))
+##         date   weekday    prev.bd
+## 1 2022-07-28  Thursday 2022-07-27
+## 2 2022-07-29    Friday 2022-07-28
+## 3 2022-07-30  Saturday 2022-07-29
+## 4 2022-07-31    Sunday 2022-07-29
+## 5 2022-08-01    Monday 2022-07-29
+## 6 2022-08-02   Tuesday 2022-07-29
+## 7 2022-08-03 Wednesday 2022-08-02
+## 8 2022-08-04  Thursday 2022-08-03
+## 9 2022-08-05    Friday 2022-08-04
+expect_equal(previous_businessday(dates, holidays = as.Date("2022-08-01") + 0:1),
+             structure(c(19200, 19201, 19202, 19202, 19202, 19202, 19202,
+                         19207, 19208), class = "Date"))
+
+## ---------------------
+
+dates <- seq(as.Date("2022-07-28"), as.Date("2022-08-5"), by = "1 day")
+data.frame(date = dates,
+           weekday = weekdays(dates),
+           prev.bd = previous_businessday(dates, holidays = "2022-08-01"))
+##         date   weekday    prev.bd
+## 1 2022-07-28  Thursday 2022-07-27
+## 2 2022-07-29    Friday 2022-07-28
+## 3 2022-07-30  Saturday 2022-07-29
+## 4 2022-07-31    Sunday 2022-07-29
+## 5 2022-08-01    Monday 2022-07-29
+## 6 2022-08-02   Tuesday 2022-07-29
+## 7 2022-08-03 Wednesday 2022-08-02
+## 8 2022-08-04  Thursday 2022-08-03
+## 9 2022-08-05    Friday 2022-08-04
+expect_equal(previous_businessday(dates, holidays = "2022-08-01"),
+             structure(c(19200, 19201, 19202, 19202, 19202, 19202, 19206,
+                         19207, 19208), class = "Date"))
+
 
 
 ## ---------------------
@@ -210,6 +327,13 @@ expect_equal(guess_datetime(
     try.patterns = c("[0-9]+-[0-9]+-[0-9]+", "%d-%m-%y"),
     date.only = TRUE),
     as.Date(s, "%d-%m-%y"))
+
+
+expect_equal(guess_datetime(
+    "88889911/20211010",
+    date.only = TRUE,
+    within = TRUE),
+    as.Date("2021-10-10"))
 
 
 
@@ -419,3 +543,11 @@ expect_equal(end_of_quarter(dates), dates2)
 
 
 ## --------- last_weekday ---------
+
+
+
+## --------- is_businessday ---------
+
+expect_true(is_businessday(as.Date("2022-08-01")))
+expect_false(is_businessday(as.Date("2022-08-01"),
+                            holidays = "2022-08-01"))

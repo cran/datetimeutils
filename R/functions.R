@@ -4,8 +4,6 @@
 
 prev_bday  <- previous_businessday <-
     function (x, holidays = NULL, shift = -1) {
-    if (!is.null(holidays))
-        .NotYetUsed("holidays", FALSE)
     if (!all(inherits(x, "Date") | inherits(x, "POSIXt")))
         stop("input must inherit from classes ",
              sQuote("Date"), " or ", sQuote("POSIXt"))
@@ -27,13 +25,19 @@ prev_bday  <- previous_businessday <-
             x[tmpi] <- x[tmpi] - 2L
         }
     }
+    if (!is.null(holidays)) {
+        holidays <- as.Date(holidays)
+        is.h <- x %in% holidays
+        x[is.h] <- previous_businessday(x[is.h])
+        while (any(is.h1 <- x[is.h] %in% holidays)) {
+            x[is.h][is.h1] <- previous_businessday(x[is.h][is.h1])
+        }
+    }
     x
 }
 
 next_bday  <- next_businessday <-
     function(x, holidays = NULL, shift = 1) {
-    if (!is.null(holidays))
-        .NotYetUsed("holidays", FALSE)
     if (!all(inherits(x,"Date") | inherits(x,"POSIXt")))
         stop("input must inherit from class Date or POSIXt")
     x <- as.Date(x)
@@ -51,7 +55,15 @@ next_bday  <- next_businessday <-
             tmpi <- tmp$wday == 6L
             x[tmpi] <- x[tmpi] + 2L
             tmpi <- tmp$wday == 0L
-        x[tmpi] <- x[tmpi] + 1L
+            x[tmpi] <- x[tmpi] + 1L
+        }
+    }
+    if (!is.null(holidays)) {
+        holidays <- as.Date(holidays)
+        is.h <- x %in% holidays
+        x[is.h] <- next_businessday(x[is.h])
+        while (any(is.h1 <- x[is.h] %in% holidays)) {
+            x[is.h][is.h1] <- next_businessday(x[is.h][is.h1])
         }
     }
     x
@@ -68,9 +80,7 @@ is_leapyear <- function(x)
     x %% 4 == 0 & (x %% 100 != 0 | x %% 400 == 0)
 
 is_businessday <- function(x, holidays = NULL) {
-    if (!is.null(holidays))
-        .NotYetUsed("holidays", FALSE)
-    !is_weekend(x)
+    !is_weekend(x) & !(x %in% as.Date(holidays))
 }
 
 first_of_month <- function (x) {
@@ -269,12 +279,19 @@ ssm <- function(time, tz = "") {
 
 convert_date <- function(x, type, fraction = FALSE, tz = "") {
     type <- tolower(type)
+    if (type == "excel1904") {
+        type <- "excel"
+        origin <- as.Date("1904-01-01")
+    } else if (type == "excel") {
+        origin <- as.Date("1899-12-30")
+    }
     if (type == "spss")
         type = "pspp"
+
     if (type == "excel" && !fraction){
-        as.Date(x, origin = "1899-12-30")
+        as.Date(x, origin = origin)
     } else if (type == "excel") {
-        tmp <- as.POSIXct(x * 86400, origin = "1899-12-30", tz = "UTC")
+        tmp <- as.POSIXct(x * 86400, origin = origin, tz = "UTC")
         as.POSIXct(strptime(format(tmp), format = "%Y-%m-%d %H:%M:%S", tz = tz))
     } else if (type == "matlab" && !fraction) {
         as.Date(x, origin = "1970-01-01") - 719529
@@ -454,22 +471,22 @@ nth_day <- function(timestamps,
     "[0-9]+/[0-9]+/[0-9][0-9] +[0-9]+:[0-9]+:[0-9]+",                             "%m/%d/%y %H:%M:%S",
     "[0-9]+/[0-9]+/[1-2][0-9][0-9][0-9] +[0-9]+:[0-9]+",                          "%m/%d/%Y %H:%M",
     "[0-9]+/[0-9]+/[0-9][0-9] +[0-9]+:[0-9]+",                                    "%m/%d/%y %H:%M",
-    "[0-9][0-9]{1,2}[.][0-9]{1,2}[.][1-2][0-9][0-9][0-9] +[0-9]+:[0-9]+:[0-9]+",  "%d.%m.%Y %H:%M:%S",
-    "[0-9][0-9]{1,2}[.][0-9]{1,2}[.][0-9][0-9] +[0-9]+:[0-9]+:[0-9]+",            "%d.%m.%y %H:%M:%S",
-    "[0-9][0-9]{1,2}[.][0-9]{1,2}[.][1-2][0-9][0-9][0-9] +[0-9]+:[0-9]+",         "%d.%m.%Y %H:%M",
-    "[0-9][0-9]{1,2}[.][0-9]{1,2}[.][0-9][0-9] +[0-9]+:[0-9]+",                   "%d.%m.%y %H:%M"
+    "[0-9]{1,2}[.][0-9]{1,2}[.][1-2][0-9][0-9][0-9] +[0-9]+:[0-9]+:[0-9]+",       "%d.%m.%Y %H:%M:%S",
+    "[0-9]{1,2}[.][0-9]{1,2}[.][0-9][0-9] +[0-9]+:[0-9]+:[0-9]+",                 "%d.%m.%y %H:%M:%S",
+    "[0-9]{1,2}[.][0-9]{1,2}[.][1-2][0-9][0-9][0-9] +[0-9]+:[0-9]+",              "%d.%m.%Y %H:%M",
+    "[0-9]{1,2}[.][0-9]{1,2}[.][0-9][0-9] +[0-9]+:[0-9]+",                        "%d.%m.%y %H:%M"
 )
 
 .d_patterns <- c(
     "[1-2][0-9][0-9][0-9]-[0-9][0-9]?-[0-9][0-9]?",         "%Y-%m-%d",
     "[0-9][0-9]?-[0-9][0-9]?-[0-9][0-9]?",                  "%Y-%m-%d",
-    "[1-2][0-9][0-9][0-9][0-9][0-9][0-9][0-9]",             "%Y%m%d",
+    "[1-2][0-9][0-9][0-9][0-1][0-9][0-3][0-9]",             "%Y%m%d",
     "[01]?[0-9]/[0-9]+/[1-2][0-9][0-9][0-9]",               "%m/%d/%Y",
     "[01]?[0-9]/[0-9]+/[0-9][0-9]",                         "%m/%d/%y",
     "[01]?[0-9]/[0-9]+/[1-2][0-9][0-9][0-9]",               "%m/%d/%Y",
     "[01]?[0-9]/[0-9]+/[0-9][0-9]",                         "%m/%d/%y",
-    "[0-9][0-9]{1,2}[.][0-9]{1,2}[.][1-2][0-9][0-9][0-9]",  "%d.%m.%Y",
-    "[0-9][0-9]{1,2}[.][0-9]{1,2}[.][1-2][0-9]",            "%d.%m.%y"
+    "[0-9]{1,2}[.][0-9]{1,2}[.][1-2][0-9][0-9][0-9]",       "%d.%m.%Y",
+    "[0-9]{1,2}[.][0-9]{1,2}[.][1-2][0-9]",                 "%d.%m.%y"
 )
 
 guess_datetime <- function(s, date.only = FALSE, within = FALSE, tz = "",
@@ -553,3 +570,53 @@ second <- function(x, as.character = FALSE) {
 .next_weekday <- function(wday, start, count = 1, interval = 1)
     start + wday - unclass(start + 4) %% 7 +
         interval*7L*(seq_len(count) - 1L)
+
+date1904 <- function(filename) {
+    ans <- rep(NA, length(filename))
+    if (!requireNamespace("utils")) {
+        warning("package ", sQuote("utils"), " (for function ",
+                sQuote("unzip"), ") not available")
+        return(ans)
+    }
+    for (f in filename) {
+        d <- file.path(tempdir(), paste0(basename(f), "__unzip"))
+        files <- utils::unzip(f, exdir = d)
+        on.exit(unlink(d, recursive = TRUE), add = TRUE)
+
+        i <- grep("workbook.xml$", files)
+        if (length(i) != 1L)
+            next
+        workbook <- paste(readLines(files[i]), collapse = "")
+        ans[f == filename] <-
+            grepl('date1904\\s*=\\s*["\']1["\']|date1904\\s*=\\s*["\']true["\']',
+                  workbook, perl = TRUE, ignore.case = TRUE)
+    }
+    ans
+}
+
+
+
+                                        # cron
+cron_expand <- function(cron,
+                        start = Sys.time(),
+                        end, dialect = NA) {
+
+                                        # To define the time you can provide concrete values for
+                                        # minute (m), hour (h), day of month (dom), month (mon),
+                                        # and day of week (dow) or use '*' in these fields (for 'any').
+                                        #
+                                        # Notice that tasks will be started based on the cron's system
+                                        # daemon's notion of time and timezones.
+                                        #
+                                        # For example, you can run a backup of all your user accounts
+                                        # at 5 a.m every week with:
+                                        # 0 5 * * 1 tar -zcf /var/backups/home.tgz /home/
+                                        #
+                                        # For more information see the manual pages of crontab(5) and cron(8)
+                                        #
+                                        # m h  dom mon dow   command
+    cron <- c("0 5 * * 1 tar -zcf /var/backups/home.tgz /home/",
+              "0 6 * * 1 tar -zcf /var/backups/home.tgz /home/")
+    cron <- strsplit(cron, " +")
+
+}
