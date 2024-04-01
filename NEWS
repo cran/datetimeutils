@@ -1,3 +1,7 @@
+v0.6-4  (2024-04-01)
+
+  o tz data have been updated
+
 v0.6-3  (2023-11-02)
 
   o fix functions 'hour', 'minute' and 'second', which
