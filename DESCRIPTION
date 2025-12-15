@@ -1,8 +1,8 @@
 Package: datetimeutils
 Type: Package
 Title: Utilities for Dates and Times
-Version: 0.6-5
-Date: 2025-04-01
+Version: 0.6-6
+Date: 2025-12-14
 Maintainer: Enrico Schumann <es@enricoschumann.net>
 Authors@R: c(person("Enrico", "Schumann",
                     role  = c("aut", "cre"),
@@ -28,8 +28,9 @@ URL: https://enricoschumann.net/R/packages/datetimeutils/ ,
         https://github.com/enricoschumann/datetimeutils
 LazyData: yes
 NeedsCompilation: no
-Packaged: 2025-04-01 06:38:08 UTC; es19
-Author: Enrico Schumann [aut, cre] (<https://orcid.org/0000-0001-7601-6576>),
+Packaged: 2025-12-14 20:10:54 UTC; es19
+Author: Enrico Schumann [aut, cre] (ORCID:
+    <https://orcid.org/0000-0001-7601-6576>),
   Unicode, Inc. [dtc, cph] (source of timezone names in 'tznames')
 Repository: CRAN
-Date/Publication: 2025-04-01 07:30:09 UTC
+Date/Publication: 2025-12-15 06:50:30 UTC
